@@ -18,5 +18,5 @@ such improvements will only get you so far as you start calculating larger and l
 
 `docker build -t powerset-test . && docker run --name powerset powerset-test`
 
-Set number of CPUs with `--cpuset-cpus <range-of-cpus>` on the `docker run` command
-Set amount of RAM with `-m <amount-of-ram>` on the `docker run` command
+Set number of CPUs with `--cpuset-cpus <range-of-cpus>` on the `docker run` command.
+Set amount of RAM with `-m <amount-of-ram>` on the `docker run` command.
