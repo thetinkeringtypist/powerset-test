@@ -10,7 +10,9 @@ public class Main {
     private static long startTime = 0L;
     private static long stopTime = 0L;
 
+
     public static void main(String[] args) {
+        // Size of the set to enumerate power sets for
         final int n = 5;
 
         // JVM warmup
@@ -23,7 +25,7 @@ public class Main {
 
         final long freeBefore = Runtime.getRuntime().freeMemory() / 1024 / 1024;    // MiB
 
-        // n = toIndex
+        // n = toIndex, which is exclusive
         BitSet base = new BitSet(100);
         base.set(0, n, true);
 
@@ -31,15 +33,15 @@ public class Main {
 
         // ConcurrentHashMap can store more than Integer.MAX_VALUE number of elements.
         // Calling mappingCount() will return the accurate number of key-value mappings
-        // if there is no concurrent writing occurring at the time of the call. size() does
-        // not guarantee accurate results if there are more than Integer.MAX_VALUE mappings
+        // if there are no concurrent writes occurring at the time of the call. Calling size()
+        // does not guarantee accurate results if there are more than Integer.MAX_VALUE mappings
         // in the map.
         ConcurrentHashMap<BitSet, Object> sets = powerset(base);
 
         stopTime = System.nanoTime();
 
         final long freeAfter = Runtime.getRuntime().freeMemory() / 1024 / 1024;    // MiB
-        System.gc();
+        System.gc(); // Manual GC invocation. Attempt to get approximate memory measurements.
 
         System.out.printf("Compute time:              %s", getTimeAsString(startTime, stopTime));
         System.out.println();
@@ -50,9 +52,11 @@ public class Main {
         System.out.printf("[AFTER ] Free Heap Space:  %s MiB%n", freeAfter);
     }
 
+
     /**
      * Recursive powerset calculation.
      *
+     * @see <a href="https://stackoverflow.com/a/1670871">This StackOverflow answer</a>
      * @param set the base bitset.
      * @return the powerset of the given bitset
      */
@@ -81,6 +85,7 @@ public class Main {
 
         return sets;
     }
+
 
     private static String getTimeAsString(final long startTimeNano, final long stopTimeNano) {
         long timeInSeconds = (stopTimeNano - startTimeNano) / (1000 * 1000 * 1000);
