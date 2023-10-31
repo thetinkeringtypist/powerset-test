@@ -16,6 +16,7 @@ public class Main {
         final int n = 5;
 
         // JVM warmup
+        System.out.println();
         System.out.printf("Warming up JVM...%n%n");
         System.out.printf("Calculating the the power set of size %d%n", n);
         for (int i = 0; i < 10000; i++) {
@@ -36,7 +37,8 @@ public class Main {
         // if there are no concurrent writes occurring at the time of the call. Calling size()
         // does not guarantee accurate results if there are more than Integer.MAX_VALUE mappings
         // in the map.
-        ConcurrentHashMap<BitSet, Object> sets = powerset(base);
+//        ConcurrentHashMap<BitSet, Object> sets = powerset(base);
+        ConcurrentHashMap<Long, Object> sets = powerset(n);
 
         stopTime = System.nanoTime();
 
@@ -81,6 +83,17 @@ public class Main {
 
             sets.put(newSet, VALUE_PLACEHOLDER);
             sets.put(s, VALUE_PLACEHOLDER);
+        }
+
+        return sets;
+    }
+
+    public static ConcurrentHashMap<Long, Object> powerset(final int numElements) {
+        ConcurrentHashMap<Long, Object> sets = new ConcurrentHashMap<>();
+
+        final long limit = (long) Math.pow(2, numElements);
+        for (long i = 0; i < limit; i++) {
+            sets.put(i, VALUE_PLACEHOLDER);
         }
 
         return sets;
