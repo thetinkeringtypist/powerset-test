@@ -1,6 +1,7 @@
 package com.thetinkeringtypist.powerset;
 
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
@@ -12,48 +13,60 @@ public class Main {
 
 
     public static void main(String[] args) {
-        // Size of the set to enumerate power sets for
-        final int n = 5;
-
         // JVM warmup
         System.out.println();
         System.out.printf("Warming up JVM...%n%n");
-        System.out.printf("Calculating the the power set of size %d%n", n);
         for (int i = 0; i < 10000; i++) {
             Object dummy = new Object();
             String s = dummy.toString();
         }
 
-        final long freeBefore = Runtime.getRuntime().freeMemory() / 1024 / 1024;    // MiB
+        loop(5, 10, 15, 20, 25, 30, 31, 32);
+    }
 
-        // n = toIndex, which is exclusive
-        BitSet base = new BitSet(100);
-        base.set(0, n, true);
-
-        startTime = System.nanoTime();
-
+    private static void loop(int... numElements) {
         // ConcurrentHashMap can store more than Integer.MAX_VALUE number of elements.
         // Calling mappingCount() will return the accurate number of key-value mappings
         // if there are no concurrent writes occurring at the time of the call. Calling size()
         // does not guarantee accurate results if there are more than Integer.MAX_VALUE mappings
         // in the map.
-//        ConcurrentHashMap<BitSet, Object> sets = powerset(base);
-        ConcurrentHashMap<Long, Object> sets = powerset(n);
+        ConcurrentHashMap<BitSet, Object> sets = null;
 
-        stopTime = System.nanoTime();
+        // Size of the set to enumerate power sets for
+        for (int n : numElements) {
+            sets = null;
 
-        final long freeAfter = Runtime.getRuntime().freeMemory() / 1024 / 1024;    // MiB
-        System.gc(); // Manual GC invocation. Attempt to get approximate memory measurements.
+            System.out.println("=================================================================");
+            System.out.printf("Calculating the the power set of size %d%n", n);
 
-        System.out.printf("Compute time:              %s", getTimeAsString(startTime, stopTime));
-        System.out.println();
-        System.out.printf("Calculated cardinality:    %.0f%n", Math.pow(2, n));
-        System.out.printf("Enumerated cardinality:    %d%n", sets.mappingCount());
-        System.out.println();
-        System.out.printf("[BEFORE] Free Heap Space:  %s MiB%n", freeBefore);
-        System.out.printf("[AFTER ] Free Heap Space:  %s MiB%n", freeAfter);
+            System.gc(); // Manual GC invocation. Attempt to get approximate memory measurements.
+            final long freeBefore = Runtime.getRuntime().freeMemory() / 1024 / 1024;    // MiB
+
+            // n = toIndex, which is exclusive
+            BitSet base = new BitSet(63);
+            base.set(0, n, true);
+
+            startTime = System.nanoTime();
+
+            sets = powerset(base);
+//            sets = powerset(n);
+
+            stopTime = System.nanoTime();
+
+            System.gc(); // Manual GC invocation. Attempt to get approximate memory measurements.
+            final long freeAfter = Runtime.getRuntime().freeMemory() / 1024 / 1024;    // MiB
+
+            System.out.printf("Compute time:              %s",
+                getTimeAsString(startTime, stopTime));
+            System.out.println();
+            System.out.printf("Calculated cardinality:    %.0f%n", Math.pow(2, n));
+            System.out.printf("Enumerated cardinality:    %d%n", sets.mappingCount());
+            System.out.println();
+            System.out.printf("[BEFORE] Free Heap Space:  %s MiB%n", freeBefore);
+            System.out.printf("[AFTER]  Free Heap Space:  %s MiB%n", freeAfter);
+            System.out.println("=================================================================");
+        }
     }
-
 
     /**
      * Recursive powerset calculation.

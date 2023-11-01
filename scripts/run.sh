@@ -30,18 +30,7 @@ fi
 
 # Set JVM Object alignment
 alignment=8
-if ((memory >= 128)); then
-  alignment=32
-elif ((memory >= 64)); then
-  alignment=32
-  optional_jvm_args+=" -XX:+UseCompressedOops"
-elif ((memory < 64)); then
-  alignment=16
-  optional_jvm_args+=" -XX:+UseCompressedOops"
-else
-  alignment=8
-  optional_jvm_args+=" -XX:+UseCompressedOops"
-fi
+optional_jvm_args+=" -XX:ObjectAlignmentInBytes=$alignment -XX:+UseCompressedOops"
 
 memory="$memory"g
 echo "JVM will use $cpus platform thread(s)"
