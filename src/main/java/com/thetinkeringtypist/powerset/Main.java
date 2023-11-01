@@ -1,7 +1,6 @@
 package com.thetinkeringtypist.powerset;
 
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
@@ -21,10 +20,10 @@ public class Main {
             String s = dummy.toString();
         }
 
-        loop(5, 10, 15, 20, 25, 30, 31, 32);
+        computePowersets(5, 10, 15, 20);
     }
 
-    private static void loop(int... numElements) {
+    private static void computePowersets(int... numElements) {
         // ConcurrentHashMap can store more than Integer.MAX_VALUE number of elements.
         // Calling mappingCount() will return the accurate number of key-value mappings
         // if there are no concurrent writes occurring at the time of the call. Calling size()
